@@ -1,0 +1,58 @@
+services:
+  # Backend (Node.js + Express + PostgreSQL)
+  - type: web
+    name: my-skin-backend
+    env: node
+    region: frankfurt
+    plan: free
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: my-skin-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: my-skin-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: my-skin-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: my-skin-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: my-skin-db
+          property: password
+      - key: JWT_SECRET
+        value: myskin-secret-key-2025-production
+      - key: CORS_ORIGIN
+        value: "*"
+
+  # Frontend (React - Static Site)
+  - type: web
+    name: my-skin-frontend
+    env: static
+    region: frankfurt
+    plan: free
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: ./client/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: my-skin-backend
+          type: web
+          envVarKey: RENDER_EXTERNAL_URL
+
+databases:
+  - name: my-skin-db
+    databaseName: myskin
+    user: myskin_user
+    plan: free

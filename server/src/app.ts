@@ -5,6 +5,7 @@ import sequelize from './config/database';
 import authRoutes from './routes/auth';
 import quizRoutes from './routes/quiz';
 import orderRoutes from './routes/orderRoutes';
+import { seedProductsIfEmpty } from './utils/seedProducts';
 
 dotenv.config();
 
@@ -51,9 +52,11 @@ async function startServer() {
     await sequelize.sync({ alter: false });
     console.log('✅ Database synchronized');
     
+    // 🌱 АВТОМАТИЧЕСКОЕ НАПОЛНЕНИЕ БАЗЫ
+    await seedProductsIfEmpty();
+    
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`🏥 Health check: http://localhost:${PORT}/api/health`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);

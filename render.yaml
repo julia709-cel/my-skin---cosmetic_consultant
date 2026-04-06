@@ -36,11 +36,10 @@ services:
       - key: CORS_ORIGIN
         value: "*"
 
-  # Frontend (React - Static Site)
+  # Frontend (React - Static Site) - БЕЗ REGION!
   - type: web
     name: my-skin-frontend
     env: static
-    region: frankfurt
     plan: free
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: ./client/dist
